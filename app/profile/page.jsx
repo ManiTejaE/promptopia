@@ -2,9 +2,10 @@
 
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 import Profile from "@components/Profile";
+import Loading from "./loading";
 
 const ProfilePage = () => {
 	const { data: session } = useSession();
@@ -35,7 +36,9 @@ const ProfilePage = () => {
 
 		if (hasConfirmed) {
 			try {
-				await fetch(`/api/prompt/${post?._id.toString()}`, { method: "DELETE" });
+				await fetch(`/api/prompt/${post?._id.toString()}`, {
+					method: "DELETE",
+				});
 
 				const filteredPosts = posts.filter(
 					(each) => each?._id.toString() !== post?._id.toString()
@@ -48,13 +51,15 @@ const ProfilePage = () => {
 		}
 	};
 	return (
-		<Profile
-			name="My"
-			desc="Welcome to your personalised page"
-			data={posts}
-			handleEdit={handleEdit}
-			handleDelete={handleDelete}
-		/>
+		<Suspense fallback={<Loading />}>
+			<Profile
+				name="My"
+				desc="Welcome to your personalised page"
+				data={posts}
+				handleEdit={handleEdit}
+				handleDelete={handleDelete}
+			/>
+		</Suspense>
 	);
 };
 
