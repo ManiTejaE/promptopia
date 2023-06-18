@@ -5,29 +5,18 @@ import PromptCard from "./PromptCard";
 import Loading from "./Loading";
 
 const PromptCardList = ({ data, handleTagClick }) => {
-	const [show, setShow] = useState(false);
-
-	useEffect(() => {
-		setTimeout(() => setShow(true), 1500);
-	}, []);
 	return (
 		<div className="mt-16 prompt_layout">
-			{!data.length && !show ? (
-				<Loading />
-			) : (
-				<>
-					<span className="blue_gradient text-center">
-						{!data.length && "No prompts found."}
-					</span>
-					{data.map((post) => (
-						<PromptCard
-							key={post?._id}
-							post={post}
-							handleTagClick={handleTagClick}
-						/>
-					))}
-				</>
-			)}
+			<span className="blue_gradient text-center">
+				{!data.length && "No prompts found."}
+			</span>
+			{data.map((post) => (
+				<PromptCard
+					key={post?._id}
+					post={post}
+					handleTagClick={handleTagClick}
+				/>
+			))}
 		</div>
 	);
 };
@@ -37,7 +26,7 @@ const Feed = () => {
 	const [posts, setPosts] = useState([]);
 	const [searchTimeout, setSearchTimeout] = useState(null);
 	const [filteredPosts, setFilteredPosts] = useState([]);
-
+	const [loading, setLoading] = useState(false);
 	const filterPrompts = (searchText) => {
 		const regex = new RegExp(searchText, "i"); // i for case in-sensitive
 
@@ -68,10 +57,12 @@ const Feed = () => {
 
 	useEffect(() => {
 		(async function fetchPosts() {
+			setLoading(true);
 			const response = await fetch("/api/prompt");
 			const data = await response.json();
 
 			setPosts(data);
+			setLoading(false);
 		})();
 	}, []);
 
@@ -88,10 +79,14 @@ const Feed = () => {
 				/>
 			</form>
 
-			<PromptCardList
-				data={searchText ? filteredPosts : posts}
-				handleTagClick={handleTagClick}
-			/>
+			{loading ? (
+				<Loading />
+			) : (
+				<PromptCardList
+					data={searchText ? filteredPosts : posts}
+					handleTagClick={handleTagClick}
+				/>
+			)}
 		</section>
 	);
 };
