@@ -27,7 +27,7 @@ const ProfilePage = () => {
 	}, [session?.user.id]);
 
 	const handleEdit = async (post) => {
-		router.push(`/update-prompt?id=${post._id}`);
+		router.push(`/update-prompt?id=${post?._id}`);
 	};
 	const handleDelete = async (post) => {
 		const hasConfirmed = confirm(
@@ -36,10 +36,10 @@ const ProfilePage = () => {
 
 		if (hasConfirmed) {
 			try {
-				await fetch(`/api/prompt/${post._id.toString()}`, { method: "DELETE" });
+				await fetch(`/api/prompt/${post?._id.toString()}`, { method: "DELETE" });
 
 				const filteredPosts = posts.filter(
-					(each) => each._id.toString() !== post._id.toString()
+					(each) => each?._id.toString() !== post?._id.toString()
 				);
 
 				setPosts(filteredPosts);
